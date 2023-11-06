@@ -1,0 +1,79 @@
+
+body {
+    margin: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+#lottie-container {
+    z-index: 100;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: auto;
+}
+#about-wrapper {
+    z-index: 100;
+    color: white;
+    margin: 0;
+    position: absolute;
+    width: 37%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    margin-left: calc(50% + 200px);
+    filter: opacity(0);
+}
+
+table {
+    width: 80%;
+    max-width: 600px;
+    border-collapse: separate;
+    border-spacing: 0 0.8rem;
+}
+
+
+th {
+    text-align: right;
+    font-family: "RobotoMonoLight", monospace;
+    font-size: 1rem;
+    color: #5f6a83;
+}
+
+td {
+    font-family: "RobotoMonoRegular";
+    font-size: 1.15rem;
+    color: #b8d0f4;
+    text-shadow: 0 0 15px #b8d0f4;
+}
+
+.align-bottom-row {
+    vertical-align: bottom;
+    padding-bottom: 0.4rem;
+}
+
+.align-top {
+    vertical-align: baseline;
+    line-height: 1.5rem;
+}
+
+#my-name {
+    color: white;
+    font-size: 2rem;
+    font-family: "RobotoMonoMedium";
+}
+
+@font-face {
+    font-family: RobotoMonoLight;
+    src: url("/fonts/RobotoMono-Light.ttf");
+}
+@font-face {
+    font-family: RobotoMonoRegular;
+    src: url("/fonts/RobotoMono-Regular.ttf");
+}
+@font-face {
+    font-family: RobotoMonoMedium;
+    src: url("/fonts/RobotoMono-Medium.ttf");
+}

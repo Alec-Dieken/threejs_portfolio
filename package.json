@@ -1,0 +1,22 @@
+{
+  "name": "coded-universe",
+  "version": "1.0.0",
+  "description": "Space-themed Portfolio",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gsap": "^3.11.5",
+    "howler": "^2.2.3",
+    "lottie-web": "^5.11.0",
+    "three": "^0.151.3"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
+    "dat.gui": "^0.7.9",
+    "vite": "^4.2.1"
+  }
+}
