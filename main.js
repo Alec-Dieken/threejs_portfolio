@@ -19,6 +19,8 @@ import { Howl } from "howler";
  ********************************************************************************************************/
 // Parameters *******************************************************************************************
 const parameters = {};
+parameters.documentAspect = window.innerWidth / window.innerHeight;
+
 parameters.fov = 60;
 parameters.cameraX = 0;
 parameters.cameraY = 0;
@@ -102,7 +104,7 @@ const openInfo = new Howl({
     src: ["/assets/sounds/openInfo.wav"],
     autoplay: false,
     loop: false,
-    volume: 0.2
+    volume: 0.2,
 });
 
 // Set renderer size and append to html document ********************************************************
@@ -585,6 +587,8 @@ window.addEventListener("resize", () => {
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+
+    parameters.documentAspect = width / height;
 });
 
 function onMouseMove(event) {
@@ -627,7 +631,7 @@ window.addEventListener("click", function (e) {
         outlinePass.selectedObjects = [];
         document.body.style.cursor = "default";
 
-        if(parameters.soundActive) {
+        if (parameters.soundActive) {
             zoomGust.play();
         }
 
@@ -645,27 +649,47 @@ window.addEventListener("click", function (e) {
     }
 
     if (parameters.earthHovered && parameters.scene2) {
+        createAboutSection();
         const aboutInfo = this.document.getElementById("about-wrapper");
 
-        if(parameters.soundActive) {
+        if (parameters.soundActive) {
             openInfo.play();
         }
-        
 
-        gsap.fromTo(
-            aboutInfo,
-            { x: -600, filter: "opacity(0%)", scale: 0},
-            { x: 0, filter: "opacity(100%)", scale: 1, duration: 0.5,
-                onComplete() { 
-                    parameters.scene2 = false;
-                    parameters.scene3 = true;
-                } 
-            }
-        );
+        if (parameters.documentAspect >= 1.25) {
+            gsap.fromTo(
+                aboutInfo,
+                { x: -600, filter: "opacity(0%)", scale: 0 },
+                {
+                    x: 0,
+                    filter: "opacity(100%)",
+                    scale: 1,
+                    duration: 0.5,
+                    onComplete() {
+                        parameters.scene2 = false;
+                        parameters.scene3 = true;
+                    },
+                }
+            );
+        } else {
+            gsap.fromTo(
+                aboutInfo,
+                { y: -600, filter: "opacity(0%)", scale: 0 },
+                {
+                    y: 0,
+                    filter: "opacity(100%)",
+                    scale: 1,
+                    duration: 0.5,
+                    onComplete() {
+                        parameters.scene2 = false;
+                        parameters.scene3 = true;
+                    },
+                }
+            );
+        }
     }
 
     if (parameters.earthHovered && parameters.scene3) {
-        
     }
 
     checkIntersection();
@@ -673,4 +697,4 @@ window.addEventListener("click", function (e) {
 
 window.addEventListener("wheel", (event) => console.log(event));
 
-console.log(renderer.info)
+console.log(renderer.info);

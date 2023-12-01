@@ -1,4 +1,3 @@
-
 body {
     margin: 0;
     overflow: hidden;
@@ -14,26 +13,23 @@ body {
     width: 60px;
     height: auto;
 }
+
 #about-wrapper {
     z-index: 100;
     color: white;
     margin: 0;
     position: absolute;
-    width: 37%;
-    height: 100%;
     display: flex;
     align-items: center;
-    margin-left: calc(50% + 200px);
     filter: opacity(0);
+    transition: margin-left 0.2s ease, margin-top 0.2s ease, width 0.2s ease, height 0.2s ease;
 }
 
 table {
     width: 80%;
-    max-width: 600px;
     border-collapse: separate;
     border-spacing: 0 0.8rem;
 }
-
 
 th {
     text-align: right;
@@ -59,10 +55,131 @@ td {
     line-height: 1.5rem;
 }
 
-#my-name {
+.my-name {
     color: white;
     font-size: 2rem;
     font-family: "RobotoMonoMedium";
+}
+
+/* WIDE ASPECT - WIDE & TALL */
+@media screen and (min-aspect-ratio: 5/4) and (min-height: 600px) and (min-width: 1250px) {
+    #about-wrapper {
+        width: 37%;
+        height: 100%;
+        margin-left: calc(50% + 200px);
+    }
+
+    table {
+        max-width: 600px;
+    }
+}
+
+/* WIDE ASPECT - WIDE & SHORT */
+@media screen and (min-aspect-ratio: 5/4) and (max-height: 599px) and (min-width: 1250px) {
+    #about-wrapper {
+        width: 37%;
+        height: 100%;
+        margin-left: calc(50% + 200px);
+    }
+
+    table {
+        max-width: 600px;
+    }
+
+    th {
+        font-size: 2vh;
+    }
+
+    td {
+        font-size: 3vh;
+    }
+
+    .my-name {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .align-top {
+        vertical-align: baseline;
+        line-height: 2vh;
+    }
+}
+
+/* WIDE ASPECT - THINNER & TALL */
+@media screen and (min-aspect-ratio: 5/4) and (min-height: 600px) and (max-width: 1249px) {
+    #about-wrapper {
+        width: 37%;
+        height: 100%;
+        margin-left: calc(50% + 150px);
+    }
+
+    table {
+        max-width: 600px;
+    }
+
+    th {
+        font-size: 1.2vw;
+    }
+
+    td {
+        font-size: 1.4vw;
+    }
+
+    .my-name {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .align-top {
+        vertical-align: baseline;
+        line-height: 2vh;
+    }
+}
+
+/* WIDE ASPECT - THINNER & SHORT */
+@media screen and (min-aspect-ratio: 5/4) and (max-height: 599px) and (max-width: 1249px) {
+    #about-wrapper {
+        width: 37%;
+        height: 100%;
+        margin-left: calc(65%);
+    }
+
+    table {
+        max-width: 600px;
+    }
+
+    th {
+        font-size: min(2vh, 1vw)
+    }
+
+    td {
+        font-size: min(3vh, 1.2vw)
+    }
+
+    .my-name {
+        font-size: min(4vh, 3vw);
+        color: white;
+    }
+
+    .align-top {
+        vertical-align: baseline;
+        line-height: 2vh;
+    }
+
+    svg {
+        display: none;
+    }
+}
+
+@media screen and (max-aspect-ratio: 1249/1000) {
+    #about-wrapper {
+        width: 100%;
+        margin-top: 70vh;
+    }
+
+    table {
+        margin: 0 auto;
+    }
 }
 
 @font-face {
