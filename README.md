@@ -1,7 +1,7 @@
 # ThreeJS Portfolio Showcase
 
 🔗 - [https://3d.alecdieken.com](https://3d.alecdieken.com)
-! Careful. Uses ~33mb of data !
+<br/>! Careful. Uses ~33mb of data !
 
 <img src="images/3d-tbn.png" width="400">
 
@@ -15,3 +15,5 @@ Welcome to the Three.js Portfolio Showcase, an immersive 3D experience built wit
 - **Sound Control**: Users can control background music and sound effects, enhancing the immersive experience.
 - **Advanced 3D Texturing**: Demonstrates proficiency in applying realistic textures to 3D models, adding depth and realism to the scene.
 - **HTML and Three.js Integration**: Showcases the ability to blend HTML elements with the Three.js canvas for a seamless user interface.
+<br/>
+More coming soon...
