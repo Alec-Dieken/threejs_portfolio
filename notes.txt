@@ -1,5 +1,0 @@
-- Only spawn in satelites after zoomed in
-- Change description text based on aspect ratio and window size
-    i.e. Width and/or height > 1000 + Thin/Wide/Square AR | Width and/or height < 1000 + Thin/Wide/Square AR
-- Loading Screen with 'View 2D Site' Button
-- Prompts to click Earth floating Above or near Earth model
