@@ -2,6 +2,8 @@
 import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -10,9 +12,10 @@ import { RGBShiftShader } from "three/addons/shaders/RGBShiftShader.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
-import { GUI } from "dat.gui";
+// import { GUI } from "dat.gui";
 import { gsap } from "gsap";
 import { Howl } from "howler";
+import createAboutSection from "./htmlHandler";
 
 /********************************************************************************************************
  ****************************************** ENVIRONMENT SETUP *******************************************
@@ -48,24 +51,43 @@ parameters.earthCloudsDeltaRotationSpeed = 0.0002;
 
 parameters.moonRadius = 0.2725;
 
-parameters.soundIconScale = 0.04;
-parameters.soundIconX = -0.14;
-parameters.soundIconY = -1.57;
+parameters.soundIconScale = 0.06;
+parameters.soundIconX = -0.21;
+parameters.soundIconY = -1.65;
 parameters.soundIconZ = 0;
 
 parameters.soundActive = false;
 
+parameters.anythingCanBeHovered = false;
 parameters.earthHovered = false;
 parameters.earthCanBeHovered = true;
 parameters.soundHovered = false;
+parameters.stockFeelerHovered = false;
+parameters.projectBeastHovered = false;
+parameters.hosHovered = false;
 
 parameters.earthEntered = false;
 parameters.muteEntered = false;
 parameters.soundEntered = false;
+parameters.planetEntered = false;
 
 parameters.scene1 = true;
 parameters.scene2 = false;
 parameters.scene3 = false;
+parameters.scene4 = false;
+
+const manager = new THREE.LoadingManager();
+const loadingScreen = document.getElementById('loading-screen');
+const perText = document.getElementById('loading-percentage');
+
+manager.onLoad = function () {
+    loadingScreen.style.display = 'none';
+    parameters.anythingCanBeHovered = true;
+};
+
+manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+    perText.innerText = ((itemsLoaded / itemsTotal) * 100).toFixed(0);
+};
 
 // Initialize scene, camera, and renderer ***************************************************************
 const scene = new THREE.Scene();
@@ -77,8 +99,8 @@ const mouse = new THREE.Vector2();
 const raycaster = new THREE.Raycaster();
 raycaster.layers.set(0);
 
-const gltfLoader = new GLTFLoader().setPath("/assets/models/");
-const svgLoader = new SVGLoader().setPath("/assets/svgs/");
+const gltfLoader = new GLTFLoader(manager).setPath("/assets/models/");
+const svgLoader = new SVGLoader(manager).setPath("/assets/svgs/");
 
 const ambientMusic = new Howl({
     src: ["/assets/sounds/Letting_Go_of_the_Day_Hanna_Lindgren.mp3"],
@@ -163,7 +185,7 @@ camera.position.z = parameters.cameraZ;
 // }
 // createSkybox();
 function createMilkyWay() {
-    new THREE.TextureLoader().load("/assets/skybox/8k_stars_milky_way.jpg", function (texture) {
+    new THREE.TextureLoader(manager).load("/assets/skybox/8k_stars_milky_way.jpg", function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         // Set the initial rotation of the texture
         // texture.repeat.set(1, 1);
@@ -210,16 +232,16 @@ function createEarth(radius = 1, widthSegments = 64, heightSegments = 64, x = 0,
     const earthGeometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
     const earthMaterial = new THREE.MeshPhongMaterial();
 
-    earthMaterial.map = new THREE.TextureLoader().load("/assets/earth-textures/earth_diffuse.jpg");
-    earthMaterial.specularMap = new THREE.TextureLoader().load("/assets/earth-textures/earth_specular.tif");
-    earthMaterial.normalMap = new THREE.TextureLoader().load("/assets/earth-textures/earth_normal.tif");
+    earthMaterial.map = new THREE.TextureLoader(manager).load("/assets/earth-textures/earth_diffuse.jpg");
+    earthMaterial.specularMap = new THREE.TextureLoader(manager).load("/assets/earth-textures/earth_specular.tif");
+    earthMaterial.normalMap = new THREE.TextureLoader(manager).load("/assets/earth-textures/earth_normal.tif");
 
     const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
     earthMesh.position.set(x, y, z);
     scene.add(earthMesh);
 
     const cloudsGeometry = new THREE.SphereGeometry(radius + 0.02, widthSegments, heightSegments);
-    const cloudsTexture = new THREE.TextureLoader().load("/assets/earth-textures/earth_clouds.jpg");
+    const cloudsTexture = new THREE.TextureLoader(manager).load("/assets/earth-textures/earth_clouds.jpg");
     const cloudsMaterial = new THREE.MeshPhongMaterial({
         map: cloudsTexture,
         alphaMap: cloudsTexture,
@@ -231,14 +253,14 @@ function createEarth(radius = 1, widthSegments = 64, heightSegments = 64, x = 0,
 
     return earthMesh;
 }
-const earth = createEarth(parameters.earthRadius, 32, 32, parameters.earthX, parameters.earthY, parameters.earthZ);
+const earth = createEarth(parameters.earthRadius, 64, 64, parameters.earthX, parameters.earthY, parameters.earthZ);
 earth.rotation.x += 0.2;
 
 // Create Moon
 function createMoon() {
     const moonGeometry = new THREE.SphereGeometry(parameters.moonRadius, 32, 32);
     const moonMaterial = new THREE.MeshBasicMaterial();
-    moonMaterial.map = new THREE.TextureLoader().load("/assets/moon-textures/moon_diffuse.jpg");
+    moonMaterial.map = new THREE.TextureLoader(manager).load("/assets/moon-textures/moon_diffuse.jpg");
 
     const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
     moonMesh.position.set(10, 0.4, 0);
@@ -256,6 +278,72 @@ function createMoon() {
 }
 const moon = createMoon();
 
+// CREATE TEXTS
+
+const currentTexts = [];
+function createText(text, font, color, size, height, cSeg, bOn, bThickness, bSize, bOs, bSeg, posX, posY, posZ) {
+    const fontLoader = new FontLoader(manager);
+
+    fontLoader.load(`/fonts/${font}.json`, function (font) {
+        const textGeometry = new TextGeometry(text, {
+            font,
+            size,
+            height,
+            curveSegments: cSeg,
+            bevelEnabled: bOn,
+            bevelThickness: bThickness,
+            bevelSize: bSize,
+            bevelOffset: bOs,
+            bevelSegments: bSeg,
+        });
+        textGeometry.computeBoundingBox();
+        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+
+        const textMaterial = new THREE.MeshBasicMaterial({ color });
+
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        textMesh.position.set(posX + -0.5 * textWidth, posY, posZ);
+
+        currentTexts.push(textMesh);
+
+        scene.add(textMesh);
+    });
+}
+if (parameters.scene1) {
+    createText("Greetings!", "JetBrains", 0xffffff, 0.5, 0.01, 12, false, 0, 0, 0, 0, 0, 2, 0.5);
+    createText("↓ Click to visit ↓", "JetBrains", 0xbbccdd, 0.3, 0.01, 12, false, 0, 0, 0, 0, 0, 1.5, 0.5);
+    createText("↑", "JetBrains", 0xbbccdd, 0.25, 0.01, 12, false, 0, 0, 0, 0, 0, -1.95, 0.5);
+    createText("Turn on sound", "JetBrains", 0xbbccdd, 0.25, 0.01, 12, false, 0, 0, 0, 0, 0, -2.35, 0.5);
+    console.log(currentTexts);
+}
+
+function removeTexts() {
+    for (let t of currentTexts) {
+        scene.remove(t);
+        t.geometry.dispose();
+        t.material.dispose();
+        t = null;
+    }
+
+    currentTexts.length = 0;
+}
+
+// CREATE PROJECT PLANET
+function createPlanet(texture, radius = 1, widthSegments = 64, heightSegments = 64, x = 0, y = 5, z = -10) {
+    const planetGeometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
+    const planetMaterial = new THREE.MeshBasicMaterial();
+
+    planetMaterial.map = new THREE.TextureLoader(manager).load(texture);
+
+    const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
+    planetMesh.position.set(x, y, z);
+
+    return planetMesh;
+}
+const planetStockFeeler = createPlanet("/assets/planet-textures/ceres.jpg", 1, 32, 32, -12, 10, 15);
+const planetProjectBeast = createPlanet("/assets/planet-textures/makemake.jpg", 1, 32, 32, -14, 8, 20);
+const planetHos = createPlanet("/assets/planet-textures/eris.jpg", 1, 32, 32, -13, 9, 17);
+
 // Create ISS ******************************************************************************************
 // let ISS;
 // gltfLoader.load("iss.gltf", function (gltf) {
@@ -269,10 +357,10 @@ const moon = createMoon();
 
 // Create SVGs ******************************************************************************************
 function createIconPlane() {
-    const geometry = new THREE.PlaneGeometry(0.3, 0.3);
+    const geometry = new THREE.PlaneGeometry(0.5, 0.5);
     const material = new THREE.MeshStandardMaterial({ color: 0x000000, side: THREE.FrontSide, transparent: true, opacity: 0 });
     const plane = new THREE.Mesh(geometry, material);
-
+    plane.position.x = 0.01;
     plane.position.y = -1.4;
     plane.position.z = 0.2;
     scene.add(plane);
@@ -311,13 +399,12 @@ svgLoader.load(
         group.position.z = parameters.soundIconZ;
 
         muteIcon = group;
-        if (!parameters.soundActive) {
-            scene.add(group);
-        }
+
+        scene.add(group);
+        
     },
     function (xhr) {
-        // On Completion
-        // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+
     },
     function (error) {
         console.log("Error", error);
@@ -355,13 +442,9 @@ svgLoader.load(
 
         soundIcon = group;
 
-        if (parameters.soundActive) {
-            scene.add(group);
-        }
     },
     function (xhr) {
-        // On Completion
-        // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+
     },
     function (error) {
         console.log("Error", error);
@@ -405,57 +488,57 @@ const pointLight2 = createPointLight(0xffffff, 0.5, -5, 0, -3);
 /********************************************************************************************************
  ****************************************** GUI DEBUG ***************************************************
  ********************************************************************************************************/
-const gui = new GUI();
+// const gui = new GUI();
 
-const cameraFolder = gui.addFolder("Camera");
-cameraFolder.add(camera.position, "x", -10, 10, 0.1);
-cameraFolder.add(camera.position, "y", -10, 10, 0.1);
-cameraFolder.add(camera.position, "z", -10, 10, 0.1);
+// const cameraFolder = gui.addFolder("Camera");
+// cameraFolder.add(camera.position, "x", -10, 10, 0.1);
+// cameraFolder.add(camera.position, "y", -10, 10, 0.1);
+// cameraFolder.add(camera.position, "z", -10, 10, 0.1);
 
-const bloomFolder = gui.addFolder("Bloom");
-bloomFolder.add(parameters, "bloomStrength", 0, 2, 0.01).onChange((value) => {
-    bloomPass.strength = value;
-});
-bloomFolder.add(parameters, "bloomRadius", 0, 2, 0.01).onChange((value) => {
-    bloomPass.radius = value;
-});
-bloomFolder.add(parameters, "bloomThreshold", 0, 2, 0.001).onChange((value) => {
-    bloomPass.threshold = value;
-});
+// const bloomFolder = gui.addFolder("Bloom");
+// bloomFolder.add(parameters, "bloomStrength", 0, 2, 0.01).onChange((value) => {
+//     bloomPass.strength = value;
+// });
+// bloomFolder.add(parameters, "bloomRadius", 0, 2, 0.01).onChange((value) => {
+//     bloomPass.radius = value;
+// });
+// bloomFolder.add(parameters, "bloomThreshold", 0, 2, 0.001).onChange((value) => {
+//     bloomPass.threshold = value;
+// });
 
-const lightingFolder = gui.addFolder("Lighting");
-lightingFolder.addColor(parameters, "ambientLightColor").onChange((value) => {
-    ambientLight.color.set(value);
-});
-lightingFolder.add(parameters, "ambientLightIntensity", 0, 3, 0.01).onChange((value) => {
-    ambientLight.intensity = value;
-});
-lightingFolder.addColor(parameters, "pointLight1Color").onChange((value) => {
-    pointLight1.color.set(value);
-});
-lightingFolder.add(parameters, "pointLight1Intensity", 0, 3, 0.01).onChange((value) => {
-    pointLight1.intensity = value;
-});
-lightingFolder.add(parameters, "pointLight1X", -10, 10, 0.01).onChange((value) => {
-    pointLight1.position.x = value;
-});
-lightingFolder.add(parameters, "pointLight1Y", -10, 10, 0.01).onChange((value) => {
-    pointLight1.position.y = value;
-});
-lightingFolder.add(parameters, "pointLight1Z", -10, 10, 0.01).onChange((value) => {
-    pointLight1.position.z = value;
-});
+// const lightingFolder = gui.addFolder("Lighting");
+// lightingFolder.addColor(parameters, "ambientLightColor").onChange((value) => {
+//     ambientLight.color.set(value);
+// });
+// lightingFolder.add(parameters, "ambientLightIntensity", 0, 3, 0.01).onChange((value) => {
+//     ambientLight.intensity = value;
+// });
+// lightingFolder.addColor(parameters, "pointLight1Color").onChange((value) => {
+//     pointLight1.color.set(value);
+// });
+// lightingFolder.add(parameters, "pointLight1Intensity", 0, 3, 0.01).onChange((value) => {
+//     pointLight1.intensity = value;
+// });
+// lightingFolder.add(parameters, "pointLight1X", -10, 10, 0.01).onChange((value) => {
+//     pointLight1.position.x = value;
+// });
+// lightingFolder.add(parameters, "pointLight1Y", -10, 10, 0.01).onChange((value) => {
+//     pointLight1.position.y = value;
+// });
+// lightingFolder.add(parameters, "pointLight1Z", -10, 10, 0.01).onChange((value) => {
+//     pointLight1.position.z = value;
+// });
 
-const earthFolder = gui.addFolder("Earth");
-earthFolder.add(earth.position, "x", -10, 10, 0.1);
-earthFolder.add(earth.position, "y", -10, 10, 0.1);
-earthFolder.add(earth.position, "z", -10, 10, 0.1);
-earthFolder.add(parameters, "earthRadius", 0.01, 5, 0.01).onChange((value) => {
-    earth.scale.x = value;
-    earth.scale.y = value;
-    earth.scale.z = value;
-});
-earthFolder.add(parameters, "earthRotationSpeed", -1, 1, 0.001);
+// const earthFolder = gui.addFolder("Earth");
+// earthFolder.add(earth.position, "x", -10, 10, 0.1);
+// earthFolder.add(earth.position, "y", -10, 10, 0.1);
+// earthFolder.add(earth.position, "z", -10, 10, 0.1);
+// earthFolder.add(parameters, "earthRadius", 0.01, 5, 0.01).onChange((value) => {
+//     earth.scale.x = value;
+//     earth.scale.y = value;
+//     earth.scale.z = value;
+// });
+// earthFolder.add(parameters, "earthRotationSpeed", -1, 1, 0.001);
 
 /********************************************************************************************************
  ****************************************** HELPERS *****************************************************
@@ -471,6 +554,7 @@ const cameraLerpFactor = 0.01;
 camera.target = new THREE.Vector3();
 
 // Render scene to screen *******************************************************************************
+let floatTime = 0;
 function animate() {
     requestAnimationFrame(animate);
     // Begin animation code
@@ -487,15 +571,24 @@ function animate() {
 
     moon.parent.rotation.y += parameters.earthRotationSpeed / 4;
 
-    // if (ISS) {
-    //     ISS.position.x -= 0.06;
-    // }
+    planetStockFeeler.rotation.y += 0.002;
+    planetStockFeeler.position.y += Math.sin(floatTime) * 0.001;
+
+    planetProjectBeast.rotation.y += 0.002;
+    planetProjectBeast.position.y += Math.sin(floatTime + 2.8) * 0.001;
+
+    planetHos.rotation.y += 0.002;
+    planetHos.position.y += Math.sin(floatTime + 1.6) * 0.001;
+
+    floatTime += 0.01;
+    if (floatTime > 2 * Math.PI) {
+        floatTime -= 2 * Math.PI;
+    }
 
     // End animation code
     composer.render();
 }
 if (WebGL.isWebGLAvailable()) {
-    // Initiate function or other initializations here
     animate();
 } else {
     const warning = WebGL.getWebGLErrorMessage();
@@ -505,72 +598,83 @@ if (WebGL.isWebGLAvailable()) {
 /********************************************************************************************************
  ****************************************** RAYCASTER ***************************************************
  ********************************************************************************************************/
-function setRcRelatedParameters(earthHovered, muteHovered, soundHovered) {
-    parameters.earthHovered = earthHovered;
-    parameters.muteHovered = muteHovered;
-    parameters.soundHovered = soundHovered;
+function updateHoverStates({
+    earthHovered = false,
+    muteHovered = false,
+    soundHovered = false,
+    stockFeelerHovered = false,
+    projectBeastHovered = false,
+    hosHovered = false,
+}) {
+    Object.assign(parameters, { earthHovered, muteHovered, soundHovered, stockFeelerHovered, projectBeastHovered, hosHovered });
 
-    if (muteHovered) {
-        muteIcon.scale.set(...Array(3).fill(parameters.soundIconScale + 0.002));
-    } else {
-        muteIcon.scale.set(...Array(3).fill(parameters.soundIconScale));
-    }
+    updateIconScale(muteIcon, muteHovered);
+    updateIconScale(soundIcon, soundHovered);
+}
 
-    if (soundHovered) {
-        soundIcon.scale.set(...Array(3).fill(parameters.soundIconScale + 0.002));
-    } else {
-        soundIcon.scale.set(...Array(3).fill(parameters.soundIconScale));
-    }
+function updateIconScale(icon, isHovered) {
+    const scale = isHovered ? parameters.soundIconScale + 0.002 : parameters.soundIconScale;
+    icon?.scale.set(scale, scale, scale);
+}
+
+function updateSceneOnHover({ cursor = "pointer", outlined, entered }) {
+    document.body.style.cursor = cursor;
+    outlinePass.selectedObjects = outlined;
+    playHoverBlip(entered);
 }
 
 function checkIntersection() {
     raycaster.setFromCamera(mouse, camera);
-
     const intersects = raycaster.intersectObjects(scene.children);
+    let newState = {};
 
     if (intersects.length > 0) {
         const selectedObject = intersects[0].object;
 
-        if (selectedObject === earth.children[0] && parameters.earthCanBeHovered) {
-            outlinePass.selectedObjects = [earth];
-            setRcRelatedParameters(true, false, false);
-            document.body.style.cursor = "pointer";
-
-            if (!parameters.earthEntered) {
-                if (parameters.soundActive) {
-                    hoverBlip.play();
-                }
+        if (parameters.anythingCanBeHovered) {
+            if (selectedObject === earth.children[0] && parameters.earthCanBeHovered) {
+                updateSceneOnHover({ outlined: [earth], entered: parameters.earthEntered });
+                newState = { earthHovered: true };
                 parameters.earthEntered = true;
-
-                parameters.soundEntered = false;
+            } else if (selectedObject === iconPlane) {
+                updateSceneOnHover({ outlined: [], entered: parameters.soundEntered });
+                const hoverState = parameters.soundActive ? { soundHovered: true } : { muteHovered: true };
+                newState = hoverState;
+                parameters.soundEntered = true;
+            } else if (selectedObject === planetStockFeeler) {
+                updateSceneOnHover({ outlined: [planetStockFeeler], entered: parameters.planetEntered });
+                newState = { stockFeelerHovered: true };
+                parameters.planetEntered = true;
+            } else if (selectedObject === planetProjectBeast) {
+                updateSceneOnHover({ outlined: [planetProjectBeast], entered: parameters.planetEntered });
+                newState = { projectBeastHovered: true };
+                parameters.planetEntered = true;
+            } else if (selectedObject === planetHos) {
+                updateSceneOnHover({ outlined: [planetHos], entered: parameters.planetEntered });
+                newState = { hosHovered: true };
+                parameters.planetEntered = true;
             }
-        } else if (selectedObject === iconPlane) {
-            if (parameters.soundActive) {
-                outlinePass.selectedObjects = [];
-                setRcRelatedParameters(false, false, true);
-                document.body.style.cursor = "pointer";
-
-                if (!parameters.soundEntered) {
-                    if (parameters.soundActive) {
-                        hoverBlip.play();
-                    }
-
-                    parameters.soundEntered = true;
-                }
-            } else {
-                outlinePass.selectedObjects = [];
-                setRcRelatedParameters(false, true, false);
-                document.body.style.cursor = "pointer";
-            }
-            parameters.earthEntered = false;
         }
     } else {
         outlinePass.selectedObjects = [];
-        setRcRelatedParameters(false, false, false);
         document.body.style.cursor = "default";
-        parameters.earthEntered = false;
-        parameters.soundEntered = false;
+        resetHoverStates();
     }
+
+    updateHoverStates(newState);
+}
+
+function playHoverBlip(enteredFlag) {
+    if (!enteredFlag && parameters.soundActive) {
+        hoverBlip.play();
+    }
+}
+
+function resetHoverStates() {
+    updateHoverStates({});
+    parameters.earthEntered = false;
+    parameters.soundEntered = false;
+    parameters.planetEntered = false;
 }
 
 /********************************************************************************************************
@@ -588,11 +692,22 @@ window.addEventListener("resize", () => {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
+    const previousAspect = parameters.documentAspect;
     parameters.documentAspect = width / height;
+
+    if (parameters.scene4 === true) {
+        if (parameters.documentAspect >= 1.25 && previousAspect < 1.25) {
+            movePlanets("wide");
+        } else if (parameters.documentAspect < 0.5 && previousAspect >= 0.5) {
+            movePlanets("thin");
+        } else if (parameters.documentAspect >= 0.5 && parameters.documentAspect < 1.25 && (previousAspect < 0.5 || previousAspect >= 1.25)) {
+            movePlanets("tall");
+        }
+    }
 });
 
 function onMouseMove(event) {
-    // Normalize the mouse position (-1 to 1) for both x and y coordinates
+    // normalize mouse position (-1 to 1) for both x and y coordinates
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -601,14 +716,13 @@ function onMouseMove(event) {
 window.addEventListener("mousemove", onMouseMove, false);
 
 function onTouchMove(event) {
-    // Normalize the touch position (-1 to 1) for both x and y coordinates
+    // normalize touch position (-1 to 1) for both x and y coordinates
     mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
 }
 window.addEventListener("touchmove", onTouchMove, false);
 
 window.addEventListener("click", function (e) {
-    e.preventDefault();
 
     if (parameters.soundHovered && parameters.soundActive) {
         parameters.soundActive = false;
@@ -630,6 +744,7 @@ window.addEventListener("click", function (e) {
         parameters.earthCanBeHovered = false;
         outlinePass.selectedObjects = [];
         document.body.style.cursor = "default";
+        removeTexts();
 
         if (parameters.soundActive) {
             zoomGust.play();
@@ -644,11 +759,13 @@ window.addEventListener("click", function (e) {
                 parameters.scene2 = true;
                 parameters.earthCanBeHovered = true;
                 checkIntersection();
+                createText("↓ Click to learn more! ↓", "JetBrains", 0xbbccdd, 0.15, 0.01, 12, false, 0, 0, 0, 0, 0, 1.25, 0);
             },
         });
     }
 
     if (parameters.earthHovered && parameters.scene2) {
+        removeTexts();
         createAboutSection();
         const aboutInfo = this.document.getElementById("about-wrapper");
 
@@ -668,6 +785,8 @@ window.addEventListener("click", function (e) {
                     onComplete() {
                         parameters.scene2 = false;
                         parameters.scene3 = true;
+                        createText("Want to see my projects?", "JetBrains", 0xbbccdd, 0.15, 0.01, 12, false, 0, 0, 0, 0, 0, 1.45, 0);
+                        createText("↓", "JetBrains", 0xbbccdd, 0.15, 0.01, 12, false, 0, 0, 0, 0, 0, 1.15, 0);
                     },
                 }
             );
@@ -683,6 +802,8 @@ window.addEventListener("click", function (e) {
                     onComplete() {
                         parameters.scene2 = false;
                         parameters.scene3 = true;
+                        createText("Want to see my projects?", "JetBrains", 0xbbccdd, 0.15, 0.01, 12, false, 0, 0, 0, 0, 0, 1.45, 0);
+                        createText("↓", "JetBrains", 0xbbccdd, 0.15, 0.01, 12, false, 0, 0, 0, 0, 0, 1.15, 0);
                     },
                 }
             );
@@ -690,11 +811,186 @@ window.addEventListener("click", function (e) {
     }
 
     if (parameters.earthHovered && parameters.scene3) {
+        removeTexts();
+
+        scene.add(planetProjectBeast);
+        scene.add(planetStockFeeler);
+        scene.add(planetHos);
+        parameters.earthCanBeHovered = false;
+        if (outlinePass.selectedObjects[0] === earth) {
+            outlinePass.selectedObjects = [];
+            document.body.style.cursor = "default";
+        }
+        checkIntersection();
+
+        if (parameters.documentAspect >= 1.25) {
+            movePlanets("wide", true);
+        } else if (parameters.documentAspect < 0.5) {
+            movePlanets("thin", true);
+        } else {
+            movePlanets("tall", true);
+        }
     }
 
+    if (parameters.stockFeelerHovered && parameters.scene4) {
+        const modal = document.getElementById("stockFeelerModal");
+        const span = document.getElementsByClassName("close")[0];
+        modal.style.display = "block";
+        parameters.anythingCanBeHovered = false;
+        outlinePass.selectedObjects = [];
+        document.body.style.cursor = "default";
+        resetHoverStates();
+        modal.addEventListener("click", function (e) {
+            if (e.target == modal) {
+                modal.style.display = "none";
+                parameters.anythingCanBeHovered = true;
+            }
+        });
+
+        span.addEventListener("click", function (e) {
+            modal.style.display = "none";
+            parameters.anythingCanBeHovered = true;
+        });
+    }
+
+    if (parameters.projectBeastHovered && parameters.scene4) {
+        const modal = document.getElementById("projectBeastModal");
+        const span = document.getElementsByClassName("close")[1];
+        modal.style.display = "block";
+        parameters.anythingCanBeHovered = false;
+        outlinePass.selectedObjects = [];
+        document.body.style.cursor = "default";
+        resetHoverStates();
+        modal.addEventListener("click", function (e) {
+            if (e.target == modal) {
+                modal.style.display = "none";
+                parameters.anythingCanBeHovered = true;
+            }
+        });
+
+        span.addEventListener("click", function (e) {
+            modal.style.display = "none";
+            parameters.anythingCanBeHovered = true;
+        });
+    }
+
+    if (parameters.hosHovered && parameters.scene4) {
+        const modal = document.getElementById("hosModal");
+        const span = document.getElementsByClassName("close")[2];
+        modal.style.display = "block";
+        parameters.anythingCanBeHovered = false;
+        outlinePass.selectedObjects = [];
+        document.body.style.cursor = "default";
+        resetHoverStates();
+        modal.addEventListener("click", function (e) {
+            if (e.target == modal) {
+                modal.style.display = "none";
+                parameters.anythingCanBeHovered = true;
+            }
+        });
+
+        span.addEventListener("click", function (e) {
+            modal.style.display = "none";
+            parameters.anythingCanBeHovered = true;
+        });
+    }
     checkIntersection();
 });
 
-window.addEventListener("wheel", (event) => console.log(event));
+function movePlanets(size, changeScenes = false) {
+    if (parameters.soundActive) {
+        zoomGust.play();
+    }
 
-console.log(renderer.info);
+    if (size === "wide") {
+        gsap.to(planetStockFeeler.position, {
+            duration: 2,
+            x: -6,
+            y: 5,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetProjectBeast.position, {
+            duration: 2,
+            x: -8,
+            y: 1,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetHos.position, {
+            duration: 2,
+            x: -6,
+            y: -3,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {
+                if (changeScenes) {
+                    parameters.scene3 = false;
+                    parameters.scene4 = true;
+                }
+            },
+        });
+    } else if (size === "tall") {
+        gsap.to(planetStockFeeler.position, {
+            duration: 2,
+            x: -3.5,
+            y: 4,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetProjectBeast.position, {
+            duration: 2,
+            x: 0.2,
+            y: 5.5,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetHos.position, {
+            duration: 2,
+            x: 3.6,
+            y: 4,
+            z: -10,
+            ease: "power4.out",
+            onComplete() {
+                if (changeScenes) {
+                    parameters.scene3 = false;
+                    parameters.scene4 = true;
+                }
+            },
+        });
+    } else if (size === "thin") {
+        gsap.to(planetStockFeeler.position, {
+            duration: 2,
+            x: -3.5,
+            y: 6,
+            z: -15,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetProjectBeast.position, {
+            duration: 2,
+            x: 0.2,
+            y: 7.5,
+            z: -15,
+            ease: "power4.out",
+            onComplete() {},
+        });
+        gsap.to(planetHos.position, {
+            duration: 2,
+            x: 3.6,
+            y: 6,
+            z: -15,
+            ease: "power4.out",
+            onComplete() {
+                if (changeScenes) {
+                    parameters.scene3 = false;
+                    parameters.scene4 = true;
+                }
+            },
+        });
+    }
+}

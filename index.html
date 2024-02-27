@@ -8,10 +8,74 @@
         <link rel="stylesheet" href="main.css" />
     </head>
     <body>
-        
-        <!-- <div id="lottie-container"></div> -->
-        <script src="/htmlHandler.js"></script>
+        <div id="loading-screen">
+            <p>Loading 3D Experience</p>
+            <p id="loading-text"><span id="loading-percentage">0</span>%</p>
+        </div>
+
+        <a id="t-d-link" href="https://alecdieken.com">← Go to 2D Portfolio</a>
+
+        </a>
+        <div id="stockFeelerModal" class="modal">
+
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>StockFeeler</h2>
+                <h3>Next.js, Node, Express, MongoDB, JavaScript</h3>
+                <a href="https://stockfeeler.online" target="_blank">https://stockfeeler.online</a><br /><br />
+                <a href="https://github.com/Alec-Dieken/StockFeeler" target="_blank">https://github.com/Alec-Dieken/StockFeeler</a>
+                <p>
+                    StockFeeler is a stock trading simulation platform, designed to sharpen users' stock prediction skills. Leveraging a year's data from the
+                    top 500 stocks, it allows users to predict future prices, with a unique feature of comparing their guesses against average user predictions
+                    and actual outcomes.<br /><br />
+
+                    This Node.js and Express-based platform rewards accuracy with points and showcases top predictors on a leaderboard. It ensures secure user
+                    access via NextAuth.js and offers a responsive, intuitive interface using MaterialUI and interactive charts from TradingView.<br /><br />
+
+                    StockFeeler's efficient backend operations are powered by node-CRON, with a frontend built on React and Next.js.
+                </p>
+            </div>
+        </div>
+
+        <div id="projectBeastModal" class="modal">
+
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>ProjectBeast</h2>
+                <h3>Flask, Python, Psql, SocketIO</h3>
+                <a href="https://projectbeast.online" target="_blank">https://projectbeast.online</a><br /><br />
+                <a href="https://github.com/Alec-Dieken/projectbeast" target="_blank">https://github.com/Alec-Dieken/projectbeast</a>
+                <p>
+                    ProjectBeast is a flask-based project management website designed to help its users collaborate and manage project-related tasks. It
+                    utilizes a hierarchy of different user roles, each with their own distinct functionality, organized into 'groups', where group specific
+                    projects and tasks are created and managed.<br /><br />
+
+                    ProjectBeast stores data using local PostgreSQL database and offers a live chat feature via SocketIO web sockets. Deployed to a custom Ubuntu Linode
+                    server using Nginx and Gunicorn.<br /><br />
+
+                    Inspired by Trello and Discord.
+                </p>
+            </div>
+        </div>
+
+        <div id="hosModal" class="modal">
+
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Hack-or-Snooze</h2>
+                <h3>jQuery, JavaScript, HTML, CSS</h3>
+                <a href="https://github.com/Alec-Dieken/hack-or-snooze" target="_blank">https://github.com/Alec-Dieken/hack-or-snooze</a>
+                <p>
+                    JavaScript-based content sharing. User-friendly interface for browsing, posting, and curating links.<br /><br />
+
+                    Streamlines user experience by enabling favoriting and content management.<br /><br />
+
+                    Allows user authentication through the hack-or-snooze API. Built with vanilla JS, Axios, and jQuery.
+                </p>
+            </div>
+        </div>
+
+        <script type="module" src="/htmlHandler.js"></script>
         <script type="module" src="/main.js"></script>
-        <!-- <script type="module" src="/lottieIcon.js"></script> -->
     </body>
 </html>
