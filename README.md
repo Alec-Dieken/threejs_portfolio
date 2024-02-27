@@ -2,7 +2,6 @@
 
 🔗 - [https://3d.alecdieken.com](https://3d.alecdieken.com)
 <br/>
-<br/>
 ! Uses ~33mb of data !
 
 <img src="images/3d-tbn.png" width="400">
