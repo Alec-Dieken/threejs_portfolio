@@ -1,7 +1,7 @@
 # ThreeJS Portfolio Showcase
 
 🔗 - [https://3d.alecdieken.com](https://3d.alecdieken.com)
-<br/>! Careful. Uses ~33mb of data !
+<br/>! Uses ~33mb of data !
 
 <img src="images/3d-tbn.png" width="400">
 
